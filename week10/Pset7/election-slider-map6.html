@@ -1,0 +1,142 @@
+<html>
+<head>
+    <title>A D3 map</title>
+    <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="election_results_2000_2016.json"></script>
+    <style>
+body {
+    position: absolute;
+    font-family: "Proxima Nova", "Montserrat", sans-serif;
+}
+h1, h2 {
+    position: relative;
+    left: 10px;
+    font-size: 1.3em;
+    font-weight: 100;
+}
+h2 {
+    top: 30px;
+    font-size: 1em;
+  
+}
+#sliderContainer {
+    text-align: center;
+    position: relative;
+    top: 600px;
+}
+    </style>
+</head>
+<body>
+    <h1>Election Results 2000-2016</h1>
+    <h2></h2>
+    <div id="sliderContainer">
+        <input id="timeslide" type="range" min="0" max="4" value="0" step="1"/><br>
+        <span id="range">2000</span>
+    </div>
+    <script>
+    var width = 1000;
+    var height = 580;
+
+    var inputValue = null;
+    var year = ["2000","2004","2008","2012","2016"];
+
+    var svg = d3.select( "body" )
+        .append( "svg" )
+        .attr( "width", width )
+        .attr( "height", height );
+
+    var g = svg.append( "g" );
+
+    var USAprojection = d3.geoAlbersUsa()
+       
+
+    var geoPath = d3.geoPath()
+        .projection( USAprojection );
+
+    /*g.selectAll( "path" )
+        .data( election_results_json.features )
+        .enter()
+        .append( "path" )
+        .attr( "fill", "#ccc" )
+        .attr( "stroke", "#333")
+        .attr( "d", geoPath );*/
+
+    var states = svg.append( "g" );
+
+    states.selectAll( "path" )
+        .data( election_results_json.features )
+        .enter()
+        .append( "path" )
+        .attr("fill", initialDate)
+        .attr("stroke", "#ccc")
+        .attr("d", geoPath)
+        .attr("class","incident")
+        ;
+
+    // when the input range changes update the value
+    d3.select("#timeslide").on("input", function() {
+        update(+this.value);
+    });
+
+    // update the fill of each SVG of class "incident"
+    function update(value) {
+        document.getElementById("range").innerHTML=year[value];
+        inputValue = year[value];
+        d3.selectAll(".incident")
+            .attr("fill", dateMatch);
+    }
+
+    function dateMatch(data, value) {
+            console.log(data);
+            console.log(inputValue);
+            if (inputValue == 2000) {
+                if (data.properties.elect2000 == "R") {
+                    return "#FE1E39 ";
+                }else if (data.properties.elect2000 == "D") {
+                    return "#04BDF4 ";
+                }
+
+            } else if (inputValue == 2004) {
+                if (data.properties.elect2004 == "R") {
+                    return "#FE1E39 ";
+                }else if (data.properties.elect2004 == "D") {
+                    return "#04BDF4 ";
+                }
+
+            } else if (inputValue == 2008) {
+                if (data.properties.elect2008 == "R") {
+                    return "#FE1E39 ";
+                }else if (data.properties.elect2008 == "D") {
+                    return "#04BDF4 ";
+                }
+
+            } else if (inputValue == 2012) {
+                if (data.properties.elect2012 == "R") {
+                    return "#FE1E39 ";
+                }else if (data.properties.elect2012 == "D") {
+                    return "#04BDF4 ";
+                }  
+
+            } else if (inputValue == 2016) {
+                if (data.properties.elect2016 == "R") {
+                    return "#FE1E39 ";
+                }else if (data.properties.elect2016 == "D") {
+                    return "#04BDF4 "; 
+                }  
+            } else {
+                return "#000099"; 
+            };                           
+    }
+
+
+    function initialDate(data, value){
+            if (data.properties.elect2000 == "R") {
+                    this.parentElement.appendChild(this);
+                 return "#FF4136 ";
+            } else if (data.properties.elect2000 == "D") {
+                 return "#0074D9 ";    
+               }
+    }
+    </script>
+</body>
+</html>
